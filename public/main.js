@@ -1,7 +1,13 @@
-function setup() {}
+let txPayload;
+
+function setup() {
+  uploadFile();
+}
+
 function draw() {}
 
 function playSound() {
+
   // Pull data from form field
   let form = document.getElementById('inputBox').value;
   // Separates individual digits into an array.
@@ -43,13 +49,15 @@ function playSound() {
     startOsc.stop(j*playTime+playTime/2);
 
     //play data tone
+
     osc = new p5.Oscillator();
     osc.setType('sine');
-    osc.freq(freqs[values[j]]);
+    osc.freq(freqs[txPayload[j]]);
     osc.amp(1);
     osc.start(j*playTime+playTime/2);
     osc.stop(j*playTime+playTime);
   }
+
 
   //play end tone 
   endOsc = new p5.Oscillator();
@@ -59,3 +67,26 @@ function playSound() {
   endOsc.start(values.length*playTime);
   endOsc.stop(values.length*playTime+1/4);
 }
+
+function uploadFile() {
+  fileinput = createFileInput(handleFile);
+  fileinput.position(0,50);
+}
+
+function handleFile(file) {
+  // data is the binary representation of unicode characters in the file.
+  const data = file.data;
+
+  // Convert to binary
+  let bin = "";
+  for(let i=0; i < data.length; i++) {
+    bin += data[i].charCodeAt(0).toString(2);
+  }
+
+  // Convert bin to hexadecimal
+  let hex = parseInt(bin, 2).toString(16).toUpperCase();
+  
+  // Put this data into the transmisison payload as individual elements.
+  // txPayload = hex.split("");
+}
+
