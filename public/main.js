@@ -22,6 +22,7 @@ var one_counter = 0
 let current_frequency = 440
 let counter = 0
 let offset_frequency = 0
+let bitstr = ""
 function draw(){
   //If mic has been activated, run this shit
   if(mic){
@@ -34,27 +35,54 @@ function draw(){
     let spectrum = fft.analyze();
 
     //console.log(fft.getEnergy(440) > 150)
-    var frequencies = [440, 540]
-    var value = {440: 0, 540: 1}
+    var frequencies = [5000, 5050, 5100, 5150, 5200, 5250, 5300, 5350, 5400, 5450, 5500, 5550, 5600, 5650, 5700, 5750]
+    var value = { //5000 - 5050 works
+    '0': 5000,
+    '1': 5050,
+    '2': 5100,
+    '3': 5150,
+    '4': 5200,
+    '5': 5250,
+    '6': 5300,
+    '7': 5350,
+    '8': 5400,
+    '9': 5450,
+    'A': 5500,
+    'B': 5550,
+    'C': 5600,
+    'D': 5650,
+    'E': 5700,
+    'F': 5750
+  };
+    //print(fft.getEnergy(5000) > 140)
     for(var v = 0; v < frequencies.length; v++){
-      if(fft.getEnergy(frequencies[v]) > 150){
+      if(fft.getEnergy(frequencies[v]) > 140){
           //console.log(`Frequency ${frequencies[v]} energy ${fft.getEnergy(frequencies[v])}`)
+          //console.log(frequencies[v])
+          if(frequencies[v] == 5000){
+            //print(0)
+          }
+          else{//print(1)
+          }
           if(frequencies[v] != current_frequency){
             offset_frequency += 1;
             current_frequency = frequencies[v];
-            if(offset_frequency > 40)
-            {
-              console.log("Offset triggered")
-              counter = 0;
-              offset_frequency = 0;
-              //current_frequency = frequencies[v]
-            }
+            counter = 0
+            //console.log("Reset counter")
+            // if(offset_frequency > 40)
+            // {
+            //   //console.log("Offset triggered")
+            //   counter = 0;
+            //   offset_frequency = 0;
+            //   //current_frequency = frequencies[v]
+            // }
           }
 
           counter += 1
           //console.log(counter)
-          if(counter >= 55){
-            console.log(value[frequencies[v]]);
+          if(counter >= 8){
+            bitstr += value[frequencies[v]]
+            console.log(bitstr);
             counter = 0
           }
 
