@@ -1,6 +1,8 @@
 
 let mic;
 function setup(){
+  createCanvas(710, 400);
+  noFill();
   fft = new p5.FFT();
   let myDiv = createDiv('click to start audio');
   myDiv.position(0, 0);
@@ -16,12 +18,24 @@ function setup(){
    });
 }
 function draw(){
+  //If mic has been activated, run this shit
   if(mic){
-    //let mySynth = new p5.MonoSynth();
-    //mySynth.play('A6')
+    //Set the input of the fft to the microphone input
     fft.setInput(mic)
     print(fft)
-    background(0);
+    background(200);
+
+    //Get the fft data into a useable object
+    let spectrum = fft.analyze();
+
+    //Draw the fft
+    beginShape();
+    for (i = 0; i < spectrum.length; i++) {
+      vertex(i, map(spectrum[i], 0, 255, height, 0));
+    }
+    endShape();
+
+    //Information from the mic
     micLevel = mic.getLevel();
     print(micLevel)
     print(mic)
