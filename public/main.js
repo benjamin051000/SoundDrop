@@ -26,7 +26,8 @@ function playSound() {
     'D': 6300,
     'E': 6400,
     'F': 6500,
-    'Z': 4000, //freq to be played before each sound
+    'Y': 4000, //freq to be played before each sound
+    'Z': 4500, //end freq
   }; //etc. TODO Use a function to do this
 
   // Play each sound
@@ -36,7 +37,7 @@ function playSound() {
     //play beginning tone
     startOsc = new p5.Oscillator();
     startOsc.setType('sine');
-    startOsc.freq(freqs['Z']);
+    startOsc.freq(freqs['Y']);
     startOsc.amp(1);
     startOsc.start(j*playTime);
     startOsc.stop(j*playTime+playTime/2);
@@ -49,4 +50,12 @@ function playSound() {
     osc.start(j*playTime+playTime/2);
     osc.stop(j*playTime+playTime);
   }
+
+  //play end tone 
+  endOsc = new p5.Oscillator();
+  endOsc.setType('sine');
+  endOsc.freq(freqs['Z']);
+  endOsc.amp(1);
+  endOsc.start(values.length*playTime);
+  endOsc.stop(values.length*playTime+1/4);
 }
