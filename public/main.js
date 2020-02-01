@@ -1,6 +1,7 @@
 
 let mic;
 function setup(){
+  fft = new p5.FFT();
   let myDiv = createDiv('click to start audio');
   myDiv.position(0, 0);
 
@@ -16,25 +17,23 @@ function setup(){
 }
 function draw(){
   if(mic){
-  background(0);
-  micLevel = mic.getLevel();
-  ellipse(width/2, constrain(height-micLevel*height*5, 0, height), 10, 10);
-}
-}
+    //let mySynth = new p5.MonoSynth();
+    //mySynth.play('A6')
+    fft.setInput(mic)
+    print(fft)
+    background(0);
+    micLevel = mic.getLevel();
+    print(micLevel)
+    print(mic)
+    ellipse(width/2, constrain(height-micLevel*height*5, 0, height), 10, 10);
+}}
+
 
 function takeInput()
 {
     //Get input
     let input = document.getElementById("inputBox").value;
     let parsedInput = parseInt(input)
-
-
-    //declare oscillator
-    // osc = new p5.Oscillator();
-    // osc.setType('sine');
-    // osc.freq(440);
-    // osc.amp(1);
-
     //Make signal based off input
     alert(parsedInput)
     mic = new p5.AudioIn()
