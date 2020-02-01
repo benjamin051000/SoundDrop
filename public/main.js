@@ -1,4 +1,3 @@
-
 let mic;
 function setup(){
   createCanvas(710, 400);
@@ -23,105 +22,80 @@ let current_frequency = 440
 let counter = 0
 let offset_frequency = 0
 let bitstr = ""
+let looking = false
+let count = 0
 function draw(){
   //If mic has been activated, run this shit
   if(mic){
     //Set the input of the fft to the microphone input
     fft.setInput(mic)
     //print(fft)
-    background(200);
+  //background(200);
 
     //Get the fft data into a useable object
     let spectrum = fft.analyze();
 
     //console.log(fft.getEnergy(440) > 150)
-    var frequencies = [5000, 5050, 5100, 5150, 5200, 5250, 5300, 5350, 5400, 5450, 5500, 5550, 5600, 5650, 5700, 5750];
+    var startFreq = 4000
+    var endFreq = 4500
+    var frequencies = [5000, 5100, 5200, 5300, 5400, 5500, 5600, 5700, 5800, 5900, 6000, 6100, 6200, 6300, 6400, 6500];
     var value =  { //5000 - 5050 works
     5000: '0',
-    5050: '1',
-    5100: '2',
-    5150: '3',
-    5200: '4',
-    5250: '5',
-    5300: '6',
-    5350: '7',
-    5400: '8',
-    5450: '9',
-    5500: 'A',
-    5550: 'A',
-    5600: 'C',
-    5650: 'D',
-    5700: 'E',
-    5750: 'F'
+    5100: '1',
+    5200: '2',
+    5300: '3',
+    5400: '4',
+    5500: '5',
+    5600: '6',
+    5700: '7',
+    5800: '8',
+    5900: '9',
+    6000: 'A',
+    6100: 'B',
+    6200: 'C',
+    6300: 'D',
+    6400: 'E',
+    6500: 'F'
   };
-    //print(fft.getEnergy(5000) > 140)
-    for(var v = 0; v < frequencies.length; v++){
-      if(fft.getEnergy(frequencies[v]) > 110){
-          //console.log(`Frequency ${frequencies[v]} energy ${fft.getEnergy(frequencies[v])}`)
-          //console.log(frequencies[v])
-          //print(value[frequencies[v]])
 
-          if(frequencies[v] != current_frequency){
-            offset_frequency += 1;
-            current_frequency = frequencies[v];
-            counter = 0
-            //console.log("Reset counter")
-            // if(offset_frequency > 40)
-            // {
-            //   //console.log("Offset triggered")
-            //   counter = 0;
-            //   offset_frequency = 0;
-            //   //current_frequency = frequencies[v]
-            // }
-          }
-
-          counter += 1
-          //console.log(counter)
-          if(counter >= 7){
-            bitstr += value[frequencies[v]]
-            console.log(bitstr);
-            counter = 0
-          }
-
+    if(fft.getEnergy(4000) > 150 && !looking){
+      looking = true
     }
-    }
-    // if(fft.getEnergy(540) > 150){
-    //   one_counter += 1
-    // }
-    // if(fft.getEnergy(440) > 150){
-    //   zero_counter += 1
-    // }
-    // if(fft.getEnergy(440) < 150){
-    //   zero_counter = 0
-    // }
-    // if(fft.getEnergy(540) < 150){
-    //   one_counter = 0
-    // }
-    // if(one_counter > 50){
-    //   console.log("1")
-    //   one_counter = 0
-    // }
-    // if(zero_counter > 50){
-    //   console.log("0")
-    //   zero_counter = 0
-    // }
 
-    //Draw the fft
-    beginShape();
-    for (i = 0; i < spectrum.length; i++) {
-      vertex(i, map(spectrum[i], 0, 255, height, 0));
+    if(looking && fft.getEnergy(4000) < 150){
+      let maxEnergy = 0
+      let idx = 0
+      for(let i = 0; i<frequencies.length; i++){
+        if(fft.getEnergy(frequencies[i]) > maxEnergy){
+          maxEnergy = fft.getEnergy(frequencies[i])
+          idx = i
+        }
+      }
+      //print(idx)
+      bitstr += value[frequencies[idx]]
+      looking = false
     }
-    endShape();
+    console.log(bitstr)
 
 
     //Information from the mic
     micLevel = mic.getLevel();
     //print(micLevel)
     //print(mic)
-    ellipse(width/2, constrain(height-micLevel*height*5, 0, height), 10, 10);
+    //ellipse(width/2, constrain(height-micLevel*height*5, 0, height), 10, 10);
 }}
 
-
+function GetDominantFreq(fft, freq){
+  let maxEnergy = 0
+  let idx = 0
+  for(var i = 0; i<freq.length; i++){
+    if(fft.getEnergy(freq[i]) > maxEnergy){
+      maxEnergy = fft.getEnergy(freq[i])
+      idx = i
+    }
+  }
+  return idx
+}
 function takeInput()
 {
     //Get input
