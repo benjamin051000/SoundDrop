@@ -9,34 +9,44 @@ function playSound() {
   console.log(values);
 
   // TODO Convert numbers into cooresponding frequencies using dict
-  let freqs = { //5000 - 5050 works
+  let freqs = { 
     '0': 5000,
-    '1': 5050,
-    '2': 5100,
-    '3': 5150,
-    '4': 5200,
-    '5': 5250,
-    '6': 5300,
-    '7': 5350,
-    '8': 5400,
-    '9': 5450,
-    'A': 5500,
-    'B': 5550,
-    'C': 5600,
-    'D': 5650,
-    'E': 5700,
-    'F': 5750
+    '1': 5100,
+    '2': 5200,
+    '3': 5300,
+    '4': 5400,
+    '5': 5500,
+    '6': 5600,
+    '7': 5700,
+    '8': 5800,
+    '9': 5900,
+    'A': 6000,
+    'B': 6100,
+    'C': 6200,
+    'D': 6300,
+    'E': 6400,
+    'F': 6500,
+    'Z': 4000, //freq to be played before each sound
   }; //etc. TODO Use a function to do this
 
   // Play each sound
-  const playTime = 1/8;
+  const playTime = 1/4;
   for (let j = 0; j < values.length; j++)
-  {   
+  {    
+    //play beginning tone
+    startOsc = new p5.Oscillator();
+    startOsc.setType('sine');
+    startOsc.freq(freqs['Z']);
+    startOsc.amp(1);
+    startOsc.start(j*playTime);
+    startOsc.stop(j*playTime+playTime/2);
+
+    //play data tone
     osc = new p5.Oscillator();
     osc.setType('sine');
     osc.freq(freqs[values[j]]);
     osc.amp(1);
-    osc.start(j*playTime);
-    osc.stop(j*playTime+playTime/2);
+    osc.start(j*playTime+playTime/2);
+    osc.stop(j*playTime+playTime);
   }
 }
