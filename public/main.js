@@ -1,22 +1,19 @@
-let txPayload;
 
 function setup() {
-  uploadFile();
+  // uploadFile();
 }
 
 function draw() {}
 
 function playSound() {
 
-  // Pull data from form field
-  // let form = document.getElementById('inputBox').value;
+  // Pull tx from form field
+  let formInput = document.getElementById('inputTx').value;
 
-  // Separates individual digits into an array.
-  // let values = form.split('');//.map((t) => {return parseInt(t)});
-  let values = txPayload.split('');
-  console.log(values);
+  // Encode the sentence into hexadecimal
+  let values = encodeTxArray(formInput.split(''));
+  console.log("Transmitting", values);
 
-  // TODO Convert numbers into cooresponding frequencies using dict
   let freqs = { 
     '0': 5000,
     '1': 5100,
@@ -36,8 +33,8 @@ function playSound() {
     'F': 6500,
     'Y': 4000, //freq to be played before each sound
     'Z': 4500, //end freq
-  }; //etc. TODO Use a function to do this
-
+  };
+  
   // Play each sound
   const playTime = 1/4;
   for (let j = 0; j < values.length; j++)
@@ -54,7 +51,7 @@ function playSound() {
 
     osc = new p5.Oscillator();
     osc.setType('sine');
-    osc.freq(freqs[txPayload[j]]);
+    osc.freq(freqs[values[j]]);
     osc.amp(1);
     osc.start(j*playTime+playTime/2);
     osc.stop(j*playTime+playTime);
@@ -90,6 +87,19 @@ function handleFile(file) {
   
   // Put this data into the transmisison payload as individual elements.
   txPayload = hex;
+}
+
+function encodeTxArray(txPayload) {
+  /* Input a string array, output hex char array. */
+  // Convert to binary
+  let bin = "";
+  for(let i=0; i < txPayload.length; i++) {
+    bin += txPayload[i].charCodeAt(0).toString(2);
+  }
+
+  // Convert bin to hexadecimal
+  let hex = parseInt(bin, 2).toString(16).toUpperCase();
+  return hex.split("");
 }
 
 function decodeRx(rxPayload) {
