@@ -9,9 +9,11 @@ function draw() {}
 function playSound() {
 
   // Pull data from form field
-  let form = document.getElementById('inputBox').value;
+  // let form = document.getElementById('inputBox').value;
+
   // Separates individual digits into an array.
-  let values = form.split('');//.map((t) => {return parseInt(t)});
+  // let values = form.split('');//.map((t) => {return parseInt(t)});
+  let values = txPayload.split('');
   console.log(values);
 
   // TODO Convert numbers into cooresponding frequencies using dict
@@ -87,6 +89,6 @@ function handleFile(file) {
   let hex = parseInt(bin, 2).toString(16).toUpperCase();
   
   // Put this data into the transmisison payload as individual elements.
-  // txPayload = hex.split("");
+  txPayload = hex;
 }
 
