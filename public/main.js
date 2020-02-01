@@ -6,6 +6,10 @@ function draw() {
 }
 function takeInput()
 {
+    //Get input
     let input = document.getElementById("inputBox").value;
-    alert(input)
+    let parsedInput = parseInt(input)
+
+    //Make signal based off input
+    alert(parsedInput)
 }
