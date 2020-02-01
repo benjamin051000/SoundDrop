@@ -19,7 +19,7 @@ function takeInput()
     //Make signal based off input
     alert(parsedInput)
 
-    if(parsedInput == 1)
+    if(parsedInput == 2)
     {
         //osc.start();
     }
