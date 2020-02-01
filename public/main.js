@@ -1,88 +1,77 @@
 let mic;
 function setup(){
+  //Create a canvas for the user to interact with (this can be any interaction)
   createCanvas(710, 400);
   noFill();
-  fft = new p5.FFT();
   let myDiv = createDiv('click to start audio');
     myDiv.position(0, 0);
 
-  let mySynth = new p5.MonoSynth();
+  //Create a FFT for sound processing
+  fft = new p5.FFT();
 
-  // This won't play until the context has started
-  mySynth.play('A6');
-
-  // Start the audio context on a click/touch event
+  // Start the audio context on a click/touch event so sound can be recorded
   userStartAudio().then(function() {
      myDiv.remove();
    });
 }
-var zero_counter = 0
-var one_counter = 0
-let current_frequency = 440
-let counter = 0
-let offset_frequency = 0
+
 let bitstr = ""
 let looking = false
-let count = 0
+let printed = false
+let finished = false
+var startFreq = 4000
+var endFreq = 4500
+var threshold = 150
+var frequencies = [5000, 5100, 5200, 5300, 5400, 5500, 5600, 5700, 5800, 5900, 6000, 6100, 6200, 6300, 6400, 6500];
+var value =  {
+5000: '0',
+5100: '1',
+5200: '2',
+5300: '3',
+5400: '4',
+5500: '5',
+5600: '6',
+5700: '7',
+5800: '8',
+5900: '9',
+6000: 'A',
+6100: 'B',
+6200: 'C',
+6300: 'D',
+6400: 'E',
+6500: 'F'
+};
 function draw(){
   //If mic has been activated, run this shit
   if(mic){
     //Set the input of the fft to the microphone input
     fft.setInput(mic)
-    //print(fft)
-  //background(200);
 
-    //Get the fft data into a useable object
-    let spectrum = fft.analyze();
+    //Parse and analyze fft data
+    fft.analyze();
 
-    //console.log(fft.getEnergy(440) > 150)
-    var startFreq = 4000
-    var endFreq = 4500
-    var frequencies = [5000, 5100, 5200, 5300, 5400, 5500, 5600, 5700, 5800, 5900, 6000, 6100, 6200, 6300, 6400, 6500];
-    var value =  { //5000 - 5050 works
-    5000: '0',
-    5100: '1',
-    5200: '2',
-    5300: '3',
-    5400: '4',
-    5500: '5',
-    5600: '6',
-    5700: '7',
-    5800: '8',
-    5900: '9',
-    6000: 'A',
-    6100: 'B',
-    6200: 'C',
-    6300: 'D',
-    6400: 'E',
-    6500: 'F'
-  };
-
-    if(fft.getEnergy(4000) > 150 && !looking){
+    if(fft.getEnergy(startFreq) > threshold && !looking){
       looking = true
     }
 
-    if(looking && fft.getEnergy(4000) < 150){
+    if(fft.getEnergy(endFreq) > threshold){
+      finished = true
+      return
+    }
+
+    if(looking && fft.getEnergy(4000) < threshold){
       let maxEnergy = 0
-      let idx = 0
-      for(let i = 0; i<frequencies.length; i++){
-        if(fft.getEnergy(frequencies[i]) > maxEnergy){
-          maxEnergy = fft.getEnergy(frequencies[i])
-          idx = i
-        }
-      }
-      //print(idx)
+      let idx = GetDominantFreq(fft, frequencies)
       bitstr += value[frequencies[idx]]
       looking = false
     }
-    console.log(bitstr)
-
+    if(finished && !printed){
+      console.log(bitstr)
+      printed = true
+    }
 
     //Information from the mic
     micLevel = mic.getLevel();
-    //print(micLevel)
-    //print(mic)
-    //ellipse(width/2, constrain(height-micLevel*height*5, 0, height), 10, 10);
 }}
 
 function GetDominantFreq(fft, freq){
@@ -96,6 +85,7 @@ function GetDominantFreq(fft, freq){
   }
   return idx
 }
+
 function takeInput()
 {
     //Get input
