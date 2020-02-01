@@ -4,3 +4,8 @@ function setup() {
 function draw() {
 
 }
+function takeInput()
+{
+    let input = document.getElementById("inputBox").value;
+    alert(input)
+}
