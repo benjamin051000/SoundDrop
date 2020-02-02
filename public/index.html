@@ -1,9 +1,9 @@
 <html>
     <header>
+        <title>SoundDrop</title>
         <h1>SoundDrop</h1>
         <p>A <strong>SwampHacks 2020</strong> programming project by John Shoemaker, Benjamin Wheeler, and Joshua Haddad.</p>
     </header>
-
     <body>
         <h2>Transmit Data</h2>
         <form id="frm1">
@@ -11,9 +11,10 @@
             <input type="button" onclick="playSound()" value="Play Sound">
           </form>
         <h2>Recieve Data</h2>
+        <input id="listen-btn" type="button" onclick="startfft()" value="Listen">
         <p>Received message:</p>
         <p id="recieved_msg">(Your message will show up here)</p>
-        <input id="listen-btn" type="button" onclick="startfft()" value="Listen">
+        
     </body>
     <script src="https://cdn.jsdelivr.net/npm/p5@0.10.2/lib/p5.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.10.2/addons/p5.sound.js"></script>
