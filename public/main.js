@@ -109,13 +109,3 @@ function encodeTxArray(txPayload) {
   console.log(output);
   return output;
 }
-
-function decodeRx(rxPayload) {
-  // Decodes a string of Hexadecimal characters.
-  let output = "";
-  for(let ch of rxPayload) {
-    output += String.fromCharCode(ch);
-  }
-  print(output);
-  return output;
-}
