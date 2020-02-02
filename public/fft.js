@@ -1,45 +1,56 @@
 let mic;
-let bitstr = ""
-let looking = false; // true after start sound is played
-let printed = false; 
-let finished = false;
+let bitstr;
+let looking; // true after start sound is played
+let printed; 
+let finished;
 let threshold = 150; // Energy level threshold to consider signal as significant
 
-let startFreq = 4000; // Freq of start sound
-let endFreq = 4500; // Freq of end sound
-let frequencies = [5000, 5100, 5200, 5300, 5400, 5500, 5600, 5700, 5800, 5900, 6000, 6100, 6200, 6300, 6400, 6500]; // Used to look for freqs
+// Tone delimiter
+let startFreq = 4000; 
+// End of transmission
+let endFreq = 4500;
+let frequencies = [5000, 5100, 5200, 5300, 5400, 5500, 5600, 5700, 5800, 5900, 6000, 6100, 6200, 6300, 6400, 6500];
+
+let value =  { // Used for print formatting only
+  5000: '0',
+  5100: '1',
+  5200: '2',
+  5300: '3',
+  5400: '4',
+  5500: '5',
+  5600: '6',
+  5700: '7',
+  5800: '8',
+  5900: '9',
+  6000: 'A',
+  6100: 'B',
+  6200: 'C',
+  6300: 'D',
+  6400: 'E',
+  6500: 'F'
+  };
+
 
 function startfft() {
+    document.getElementById("listen-btn").value = "Reset";
     mic = new p5.AudioIn();
     mic.start();
     fft = new p5.FFT();
+    bitstr = "";
+    looking = false;
+    printed = false;
+    finished = false;
 }
 
 function setup() {
+  createCanvas(710, 400);
+  noFill();
   // Start the audio context on a click/touch event so sound can be recorded
   userStartAudio().then(()=>{
       console.log("Microphone enabled.");
   });
 }
 
-let value =  { // Used for print formatting only
-5000: '0',
-5100: '1',
-5200: '2',
-5300: '3',
-5400: '4',
-5500: '5',
-5600: '6',
-5700: '7',
-5800: '8',
-5900: '9',
-6000: 'A',
-6100: 'B',
-6200: 'C',
-6300: 'D',
-6400: 'E',
-6500: 'F'
-};
 
 function draw(){
   //If mic has been activated, run this shit
@@ -51,8 +62,6 @@ function draw(){
     let spectrum = fft.analyze();
 
     // Draw the fft in the canvas
-    createCanvas(710, 400);
-    noFill();
     background(250);
     beginShape();
     stroke(0, 150, 255);
@@ -85,9 +94,6 @@ function draw(){
       bitstr += value[frequencies[idx]];
       looking = false;
     }
-
-    // Information from the mic
-    // micLevel = mic.getLevel();
   }
   //Print out bitstr
   if (finished) {
