@@ -9,7 +9,6 @@
   "author": "Benjamin Wheeler, Joshua Haddad, John Shoemaker",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.1",
-    "p5": "^0.10.2"
+    "express": "^4.17.1"
   }
 }
