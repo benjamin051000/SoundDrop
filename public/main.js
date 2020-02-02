@@ -35,7 +35,7 @@ function playSound() {
   };
   
   // Play each sound
-  const playTime = 1/4;
+  const playTime = 1/2;
   for (let j = 0; j < values.length; j++)
   {    
     //play beginning tone
@@ -94,7 +94,7 @@ function encodeTxArray(txPayload) {
   let hex = [];
   // Convert each element to binary, and then to hexadecimal
   for(let e of txPayload) {
-    hex.push(e.charCodeAt(0).toString(16));
+    hex.push(e.charCodeAt(0).toString(16).toUpperCase());
   }
   console.log("Input converted to", hex);
   
