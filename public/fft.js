@@ -16,14 +16,16 @@ function setup() {
 }
 
 let bitstr = ""
-let looking = false
-let printed = false
+let looking = false // true after start sound is played
+let printed = false 
 let finished = false
-var startFreq = 4000
-var endFreq = 4500
-var threshold = 150
-var frequencies = [5000, 5100, 5200, 5300, 5400, 5500, 5600, 5700, 5800, 5900, 6000, 6100, 6200, 6300, 6400, 6500];
-var value =  {
+let threshold = 150 // Energy level threshold to consider signal as significant
+
+let startFreq = 4000 // Freq of start sound
+let endFreq = 4500 // Freq of end sound
+let frequencies = [5000, 5100, 5200, 5300, 5400, 5500, 5600, 5700, 5800, 5900, 6000, 6100, 6200, 6300, 6400, 6500]; // Used to look for freqs
+
+let value =  { // Used for print formatting only
 5000: '0',
 5100: '1',
 5200: '2',
@@ -49,7 +51,15 @@ function draw(){
     fft.setInput(mic)
 
     //Parse and analyze fft data
-    fft.analyze();
+    let spectrum = fft.analyze();
+
+    // Draw the fft in the canvas
+    background(250);
+    beginShape();
+    for(let i = 0; i < spectrum.length; i++) {
+      vertex(i, map(spectrum[i], 0, 255, height, 0));
+    }
+    endShape();
 
     if(fft.getEnergy(startFreq) > threshold && !looking){
       looking = true
@@ -71,18 +81,19 @@ function draw(){
       printed = true
     }
 
-    //Information from the mic
+    // Information from the mic
     micLevel = mic.getLevel();
 }}
 
-function GetDominantFreq(fft, freq){
-  let maxEnergy = 0
-  let idx = 0
-  for(var i = 0; i<freq.length; i++){
+function GetDominantFreq(fft, freq) {
+  // Returns the frequency with the largest energy (amplitude)
+  let maxEnergy = 0;
+  let maxidx = 0;
+  for(let i=0; i < freq.length; i++){
     if(fft.getEnergy(freq[i]) > maxEnergy){
-      maxEnergy = fft.getEnergy(freq[i])
-      idx = i
+      maxEnergy = fft.getEnergy(freq[i]);
+      maxidx = i;
     }
   }
-  return idx
+  return maxidx;
 }
