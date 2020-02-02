@@ -12,8 +12,6 @@ let frequencies = [5000, 5100, 5200, 5300, 5400, 5500, 5600, 5700, 5800, 5900, 6
 function startfft() {
     mic = new p5.AudioIn();
     mic.start();
-    createCanvas(710, 400);
-    noFill();
     fft = new p5.FFT();
 }
 
@@ -53,6 +51,8 @@ function draw(){
     let spectrum = fft.analyze();
 
     // Draw the fft in the canvas
+    createCanvas(710, 400);
+    noFill();
     background(250);
     beginShape();
     stroke(0, 150, 255);
@@ -93,6 +93,7 @@ function draw(){
   if (finished) {
     let message = decodeRx(bitstr);
     console.log("Recieved message:", message);
+    document.getElementById("recieved_msg").innerHTML = message;
   }
 }
 

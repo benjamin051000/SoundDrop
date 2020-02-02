@@ -1,4 +1,3 @@
-
 function setup() {
   // uploadFile();
 }
@@ -6,7 +5,6 @@ function setup() {
 function draw() {}
 
 function playSound() {
-
   // Pull tx from form field
   let formInput = document.getElementById('inputTx').value;
 
@@ -36,10 +34,11 @@ function playSound() {
   
   // Play each sound
   const playTime = 1/2;
+  
   for (let j = 0; j < values.length; j++)
   {    
     //play beginning tone
-    startOsc = new p5.Oscillator();
+    let startOsc = new p5.Oscillator();
     startOsc.setType('sine');
     startOsc.freq(freqs['Y']);
     startOsc.amp(1);
@@ -48,7 +47,7 @@ function playSound() {
 
     //play data tone
 
-    osc = new p5.Oscillator();
+    let osc = new p5.Oscillator();
     osc.setType('sine');
     osc.freq(freqs[values[j]]);
     osc.amp(1);
@@ -58,7 +57,7 @@ function playSound() {
 
 
   //play end tone 
-  endOsc = new p5.Oscillator();
+  let endOsc = new p5.Oscillator();
   endOsc.setType('sine');
   endOsc.freq(freqs['Z']);
   endOsc.amp(1);
