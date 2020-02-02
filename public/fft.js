@@ -57,14 +57,14 @@ function updateSlider() {
   let sliderVal = document.getElementById("thresh-val");
   sliderVal.innerHTML = slider.value;
   slider.oninput = () => {
-    output.innerHTML = this.value;
+    sliderVal.innerHTML = this.value;
   }
   // Update threshold in algorithm
   threshold = sliderVal;
 }
 
 function draw(){
-  updateSlider();
+  // updateSlider();
 
   //If mic has been activated, run this shit
   if(mic && !finished) {
