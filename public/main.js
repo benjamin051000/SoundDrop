@@ -97,8 +97,17 @@ function encodeTxArray(txPayload) {
     hex.push(e.charCodeAt(0).toString(16));
   }
   console.log("Input converted to", hex);
-
-  return hex;
+  
+  // Now, split elements to 1 char each
+  let output = [];
+  for(let e of hex) {
+    let temp = e.split("");
+    for(let t of temp) {
+      output.push(t);
+    }
+  }
+  console.log(output);
+  return output;
 }
 
 function decodeRx(rxPayload) {
