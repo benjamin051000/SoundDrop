@@ -51,8 +51,21 @@ function setup() {
   });
 }
 
+function updateSlider() {
+  // Update threshold slider
+  let slider = document.getElementById("Rx-thresh");
+  let sliderVal = document.getElementById("thresh-val");
+  sliderVal.innerHTML = slider.value;
+  slider.oninput = () => {
+    output.innerHTML = this.value;
+  }
+  // Update threshold in algorithm
+  threshold = sliderVal;
+}
 
 function draw(){
+  updateSlider();
+
   //If mic has been activated, run this shit
   if(mic && !finished) {
     //Set the input of the fft to the microphone input

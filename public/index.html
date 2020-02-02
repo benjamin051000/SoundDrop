@@ -10,9 +10,19 @@
             Send a message: <input id = "inputTx" type="text"><br>
             <input type="button" onclick="playSound()" value="Play Sound">
           </form>
+
         <h2>Recieve Data</h2>
+        <h3>Threshold</h3>
+        <div class="slidecontainer">
+            <input type="range" min="100" max="160" value="130" class="slider" id="Rx-thresh">
+            <p>Current: <span id="thresh-val"></span></p>
+          </div>
+        <p>If the transmission is unreliable, try adjusting the threshold to get a better reception.</p>
+
+
+
         <input id="listen-btn" type="button" onclick="startfft()" value="Listen">
-        <p>Received message:</p>
+        <p><u>Received message:</u></p>
         <p id="recieved_msg">(Your message will show up here)</p>
         
     </body>
