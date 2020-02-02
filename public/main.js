@@ -12,7 +12,6 @@ function playSound() {
 
   // Encode the sentence into hexadecimal
   let values = encodeTxArray(formInput.split(''));
-  console.log("Transmitting", values);
 
   let freqs = { 
     '0': 5000,
@@ -91,21 +90,21 @@ function handleFile(file) {
 
 function encodeTxArray(txPayload) {
   /* Input a string array, output hex char array. */
-  // Convert to binary
-  let bin = "";
-  for(let i=0; i < txPayload.length; i++) {
-    bin += txPayload[i].charCodeAt(0).toString(2);
+  
+  let hex = [];
+  // Convert each element to binary, and then to hexadecimal
+  for(let e of txPayload) {
+    hex.push(e.charCodeAt(0).toString(16));
   }
+  console.log("Input converted to", hex);
 
-  // Convert bin to hexadecimal
-  let hex = parseInt(bin, 2).toString(16).toUpperCase();
-  return hex.split("");
+  return hex;
 }
 
 function decodeRx(rxPayload) {
   // Decodes a string of Hexadecimal characters.
   let output = "";
-  for(let ch in rxPayload) {
+  for(let ch of rxPayload) {
     output += String.fromCharCode(ch);
   }
   print(output);
