@@ -1,6 +1,6 @@
 let mic;
 let bitstr;
-let looking; // true after start sound is played
+let lookForData; // true after start sound is played
 let printed; 
 let finished;
 let threshold = 150; // Energy level threshold to consider signal as significant
@@ -9,7 +9,8 @@ let threshold = 150; // Energy level threshold to consider signal as significant
 let startFreq = 4000; 
 // End of transmission
 let endFreq = 4500;
-let frequencies = [5000, 5100, 5200, 5300, 5400, 5500, 5600, 5700, 5800, 5900, 6000, 6100, 6200, 6300, 6400, 6500];
+let frequencies = [5000, 5100, 5200, 5300, 5400, 5500, 5600, 5700, 
+                  5800, 5900, 6000, 6100, 6200, 6300, 6400, 6500];
 
 let value =  { // Used for print formatting only
   5000: '0',
@@ -37,21 +38,23 @@ function startfft() {
     mic.start();
     fft = new p5.FFT();
     bitstr = "";
-    looking = false;
+    lookForData = false;
     printed = false;
     finished = false;
 }
 
+// Setup is called once by the p5 library.
 function setup() {
   createCanvas(710, 400);
   noFill();
   // Start the audio context on a click/touch event so sound can be recorded
+  // This is required to get microphone access.
   userStartAudio().then(()=>{
       console.log("Microphone enabled.");
   });
 }
 
-function updateSlider() {
+/* function updateSlider() { // This makes the listener fail for some reason.
   // Update threshold slider
   let slider = document.getElementById("Rx-thresh");
   let sliderVal = document.getElementById("thresh-val");
@@ -61,20 +64,20 @@ function updateSlider() {
   }
   // Update threshold in algorithm
   threshold = sliderVal;
-}
+} */
 
-function draw(){
+// Draw is called repeatedly by p5 until the script is finished executing.
+function draw() {
   // updateSlider();
 
-  //If mic has been activated, run this shit
   if(mic && !finished) {
-    //Set the input of the fft to the microphone input
-    fft.setInput(mic)
+    // Set the input of the FFT to the microphone input
+    fft.setInput(mic);
 
-    //Parse and analyze fft data
+    // Parse and save FFT data
     let spectrum = fft.analyze();
 
-    // Draw the fft in the canvas
+    // Draw frequency spectrum in the canvas
     background(250);
     beginShape();
     stroke(0, 150, 255);
@@ -83,46 +86,44 @@ function draw(){
     }
     endShape();
 
-    let startEnergy = fft.getEnergy(startFreq);
-    let endEnergy = fft.getEnergy(endFreq);
+    // Get a sample of the energies (magnitudes) at the beginning and end marker frequencies.
+    let startEnergy = fft.getEnergy(startFreq),
+        endEnergy = fft.getEnergy(endFreq);
 
-    // Look for the start frequency.
-    if(startEnergy > threshold && !looking){
-      looking = true;
+    if(startEnergy > threshold && !lookForData){
+      // If the start marker was heard, begin listening for data tones.
+      lookForData = true;
     }
-
-    // Look for end frequency
-    if(endEnergy > threshold){
+    else if(endEnergy > threshold && !lookForData){
+      // If the end marker was heard, stop listening and reconstruct the data.
       finished = true;
-      if(!printed) {
-        console.log(bitstr);
-        printed = true;
-      }
+      console.log("Recieved", bitstr);
       return;
     }
-
-    if(looking && startEnergy < threshold && endEnergy < threshold) {
-      let maxEnergy = 0;
-      let idx = GetDominantFreq(fft, frequencies);
+    else if(lookForData && startEnergy < threshold && endEnergy < threshold) {
+      // Listen for tones that match the preset frequencies to represent hex digits (defined by the frequencies variable)
+      let idx = getDominantFreq(fft, frequencies);
       bitstr += value[frequencies[idx]];
-      looking = false;
+      lookForData = false;
     }
   }
-  //Print out bitstr
+
+  // Print out bitstr
   if (finished) {
     let message = decodeRx(bitstr);
-    console.log("Recieved message:", message);
+    console.log("Reconstructed message:", message);
     document.getElementById("recieved_msg").innerHTML = message;
   }
-}
+} // End of draw()
 
-function GetDominantFreq(fft, freq) {
+function getDominantFreq(fft, freq) {
   // Returns the frequency with the largest energy (amplitude)
-  let maxEnergy = 0;
-  let maxidx = 0;
-  for(let i=0; i < freq.length; i++){
-    if(fft.getEnergy(freq[i]) > maxEnergy){
-      maxEnergy = fft.getEnergy(freq[i]);
+  let maxEnergy = 0, maxidx = 0;
+  
+  for(let i = 0; i < freq.length; i++){
+    let energy = fft.getEnergy(freq[i]);
+    if(energy > maxEnergy) {
+      maxEnergy = energy;
       maxidx = i;
     }
   }
@@ -130,11 +131,16 @@ function GetDominantFreq(fft, freq) {
 }
 
 function decodeRx(rxPayload) {
-  // separate rxPayload into groups of 2 (thanks StackOverflow)
-  let temp = rxPayload.match(/.{1,2}/g);
+  // Check for invalid input
+  if(!rxPayload) {
+    return "Error: Reset the listener and try again.";
+  }
+
+  // separate rxPayload into groups of 2 (TODO make this work for emoji which need 4)
+  // This is a magical method from StackOverflow, no idea how it works
+  let temp = rxPayload.match(/.{1,2}/g); 
   console.log("Hex characters:", temp);
 
-  console.log(temp);
   // Decodes a string of Hexadecimal characters.
   let output = "";
   for(let ch of temp) {

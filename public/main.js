@@ -1,17 +1,17 @@
-function setup() {
-  // uploadFile();
-}
-
-function draw() {}
+// function setup() {}
+// function draw() {}
 
 function playSound() {
-  // Pull tx from form field
-  let formInput = document.getElementById('inputTx').value;
+  // Grab message in form
+  const formInput = document.getElementById('inputTx').value;
 
-  // Encode the sentence into hexadecimal
-  let values = encodeTxArray(formInput.split(''));
+  // Encode the message into hexadecimal
+  const values = encodeTxArray(formInput.split(''));
 
-  let freqs = { 
+  // Each tone and its cooresponding frequency.
+  // begin and end are markers and not used when
+  // reconstructing message.
+  const freqs = { 
     '0': 5000,
     '1': 5100,
     '2': 5200,
@@ -28,76 +28,53 @@ function playSound() {
     'D': 6300,
     'E': 6400,
     'F': 6500,
-    'Y': 4000, //freq to be played before each sound
-    'Z': 4500, //end freq
+    'begin': 4000, //freq to be played before each sound
+    'end': 4500, //end freq
   };
   
-  // Play each sound
+  // Speed at which tones are produced (lower is faster)
   const playTime = 1/2;
   
+  // For each bit, play a beginning marker and its tone.
   for (let j = 0; j < values.length; j++)
   {    
-    //play beginning tone
+    // play beginning marker
     let startOsc = new p5.Oscillator();
     startOsc.setType('sine');
-    startOsc.freq(freqs['Y']);
+    startOsc.freq(freqs['begin']);
     startOsc.amp(1);
     startOsc.start(j*playTime);
     startOsc.stop(j*playTime+playTime/2);
 
-    //play data tone
-
-    let osc = new p5.Oscillator();
-    osc.setType('sine');
-    osc.freq(freqs[values[j]]);
-    osc.amp(1);
-    osc.start(j*playTime+playTime/2);
-    osc.stop(j*playTime+playTime);
+    // Play data tone
+    let dataOsc = new p5.Oscillator();
+    dataOsc.setType('sine');
+    dataOsc.freq(freqs[values[j]]);
+    dataOsc.amp(1);
+    dataOsc.start(j*playTime+playTime/2);
+    dataOsc.stop(j*playTime+playTime);
   }
 
-
-  //play end tone 
+  // Play end tone 
   let endOsc = new p5.Oscillator();
   endOsc.setType('sine');
-  endOsc.freq(freqs['Z']);
+  endOsc.freq(freqs['end']);
   endOsc.amp(1);
   endOsc.start(values.length*playTime);
   endOsc.stop(values.length*playTime+1/4);
-}
-
-function uploadFile() {
-  fileinput = createFileInput(handleFile);
-  fileinput.position(0,50);
-}
-
-function handleFile(file) {
-  // data is the binary representation of unicode characters in the file.
-  const data = file.data;
-
-  // Convert to binary
-  let bin = "";
-  for(let i=0; i < data.length; i++) {
-    bin += data[i].charCodeAt(0).toString(2);
-  }
-
-  // Convert bin to hexadecimal
-  let hex = parseInt(bin, 2).toString(16).toUpperCase();
-  
-  // Put this data into the transmisison payload as individual elements.
-  txPayload = hex;
 }
 
 function encodeTxArray(txPayload) {
   /* Input a string array, output hex char array. */
   
   let hex = [];
-  // Convert each element to binary, and then to hexadecimal
+  // Convert each element to hexadecimal
   for(let e of txPayload) {
     hex.push(e.charCodeAt(0).toString(16).toUpperCase());
   }
   console.log("Input converted to", hex);
   
-  // Now, split elements to 1 char each
+  // Now, split elements to one character each
   let output = [];
   for(let e of hex) {
     let temp = e.split("");
