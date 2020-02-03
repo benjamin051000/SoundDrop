@@ -1,5 +1,5 @@
 # SoundDrop
-SoundDrop is a sound-based file sharing platform. This is a proof of concept developed by John Shoemaker, Joshua Haddad, and Benjamin Wheeler for [SwampHacks 2020](https://2020.swamphacks.com/) at the University of Florida (in less than 24 hours).
+SoundDrop is a sound-based file sharing platform. This is a proof of concept developed by John Shoemaker, Joshua Haddad, and Benjamin Wheeler for [SwampHacks 2020](https://2020.swamphacks.com/) at the University of Florida (in less than 24 hours), and won second place overall at the hackathon.
 
 ## How to Run
 1. Clone the repository using `git clone https://github.com/benjamin051000/SoundDrop.git`.
