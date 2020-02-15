@@ -1,6 +1,6 @@
 let mic;
 let bitstr;
-// let lookForData; // true after start sound is played
+let lookForData; // true after start sound is played
 let printed; 
 let finished;
 let threshold = 150; // Energy level threshold to consider signal as significant
@@ -99,6 +99,11 @@ function draw() {
     else {
       // Listen for tones that match the preset frequencies to represent hex digits (defined by the frequencies variable)
       let idx = getDominantFreq(fft);
+      // Skip it if it's the same value.
+      if(idx == bitstr[bitstr.length-1]) {
+        return;
+      }
+      
       bitstr += value[frequencies[idx]];
       lookForData = false;
     }
@@ -114,7 +119,7 @@ function draw() {
         bitstr[i] = bitstr[i-1];
       }
     }
-    
+
     let message = decodeRx(bitstr);
     console.log("Reconstructed message:", message);
     document.getElementById("recieved_msg").innerHTML = message;
