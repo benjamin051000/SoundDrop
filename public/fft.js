@@ -68,6 +68,8 @@ function setup() {
   threshold = sliderVal;
 } */
 
+let lastFrequency = '';
+
 // Draw is called repeatedly by p5 until the script is finished executing.
 function draw() {
   // updateSlider();
@@ -107,7 +109,11 @@ function draw() {
         finished = true;
       }
       else {
-        bitstr += value[frequencies[idx]];
+        // Add it to the string.
+        if(lastFrequency != 'R') {
+          lastFrequency = value[frequencies[idx]];
+        }
+        bitstr += lastFrequency;
         print("Heard " + value[frequencies[idx]]);
       }
     }
@@ -135,12 +141,12 @@ function draw() {
     bitstr = bitstr.substring(1);
     printed = true; // Ensures output is only printed once.
     // Convert all of the 'R' repeat markers to their repeated values.
-    for(let i=1; i < bitstr.length; i++) { // Start at 2??
-      if(bitstr[i] == 'R') {
-        // Replace it with the previous value.
-        bitstr[i] = bitstr[i-1]; // It's not an array. TODO make it an array
-      }
-    }
+    // for(let i=1; i < bitstr.length; i++) { // Start at 2??
+    //   if(bitstr[i] == 'R') {
+    //     // Replace it with the previous value.
+    //     bitstr[i] = bitstr[i-1]; // It's not an array. TODO make it an array
+    //   }
+    
 
     let message = decodeRx(bitstr);
     console.log("Reconstructed message:", message);
