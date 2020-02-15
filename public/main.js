@@ -6,7 +6,7 @@ function playSound() {
   const formInput = document.getElementById('inputTx').value;
 
   // Encode the message into hexadecimal
-  const values = encodeTxArray(formInput.split(''));
+  const values = ['1', '5', '1', '1']//encodeTxArray(formInput.split(''));
 
   // Each tone and its cooresponding frequency.
   // begin and end are markers and not used when
@@ -33,14 +33,12 @@ function playSound() {
   };
   
   // Speed at which tones are produced (lower is faster)
-  const playTime = 1/2;
+  const playTime = 1/4;
   
-
+  // Used to keep track of when we are repeating the tone.
+  let repeat = true;
   // For each bit, play a beginning marker and its tone.
-  for (let j = 0; j < values.length; j++) {    
-    // Used to keep track of when we are repeating the tone.
-    let repeat = true;
-    
+  for (let j = 0; j < values.length; j++) {        
     // play beginning marker
     // let startOsc = new p5.Oscillator();
     // startOsc.setType('sine');
@@ -54,10 +52,10 @@ function playSound() {
     dataOsc.setType('sine');
     if(j >= 1 && values[j] == values[j-1]) {
       // If the tone is the same as the last time, toggle between repeat and not.
-      if(repeat)
-        dataOsc.freq(freqs['repeat']);
-      else 
-        dataOsc.freq(freqs[values[j]]);
+      if(repeat) {
+        dataOsc.freq(freqs['repeat']);}
+      else {
+        dataOsc.freq(freqs[values[j]]);}
       
       repeat = !repeat; // Flip it for next time.
     } 
@@ -66,7 +64,7 @@ function playSound() {
     }
 
     dataOsc.amp(1);
-    dataOsc.start(j*playTime+playTime/2);
+    dataOsc.start(j*playTime);
     dataOsc.stop(j*playTime+playTime);
   }
 
@@ -76,8 +74,9 @@ function playSound() {
   endOsc.freq(freqs['end']);
   endOsc.amp(1);
   endOsc.start(values.length*playTime);
-  endOsc.stop(values.length*playTime+1/4);
+  endOsc.stop(values.length*playTime+playTime);
 }
+
 
 function encodeTxArray(txPayload) {
   /* Input a string array, output hex char array. */
