@@ -28,28 +28,43 @@ function playSound() {
     'D': 6300,
     'E': 6400,
     'F': 6500,
-    'begin': 4000, //freq to be played before each sound
+    'repeat': 4000, //freq to be played before each sound
     'end': 4500, //end freq
   };
   
   // Speed at which tones are produced (lower is faster)
   const playTime = 1/2;
   
+
   // For each bit, play a beginning marker and its tone.
-  for (let j = 0; j < values.length; j++)
-  {    
+  for (let j = 0; j < values.length; j++) {    
+    // Used to keep track of when we are repeating the tone.
+    let repeat = true;
+    
     // play beginning marker
-    let startOsc = new p5.Oscillator();
-    startOsc.setType('sine');
-    startOsc.freq(freqs['begin']);
-    startOsc.amp(1);
-    startOsc.start(j*playTime);
-    startOsc.stop(j*playTime+playTime/2);
+    // let startOsc = new p5.Oscillator();
+    // startOsc.setType('sine');
+    // startOsc.freq(freqs['begin']);
+    // startOsc.amp(1);
+    // startOsc.start(j*playTime);
+    // startOsc.stop(j*playTime+playTime/2);
 
     // Play data tone
     let dataOsc = new p5.Oscillator();
     dataOsc.setType('sine');
-    dataOsc.freq(freqs[values[j]]);
+    if(j >= 1 && values[j] == values[j-1]) {
+      // If the tone is the same as the last time, toggle between repeat and not.
+      if(repeat)
+        dataOsc.freq(freqs['repeat']);
+      else 
+        dataOsc.freq(freqs[values[j]]);
+      
+      repeat = !repeat; // Flip it for next time.
+    } 
+    else {
+      dataOsc.freq(freqs[values[j]]);  
+    }
+
     dataOsc.amp(1);
     dataOsc.start(j*playTime+playTime/2);
     dataOsc.stop(j*playTime+playTime);
