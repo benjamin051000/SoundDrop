@@ -1,5 +1,5 @@
 let mic;
-let bitstr;
+let bitstr = ''; // TODO make sure the rest of the code treats this like a string (or an array maybe)
 let lookForData; // true after start sound is played
 let printed; 
 let finished;
@@ -10,7 +10,7 @@ let threshold = 150; // Energy level threshold to consider signal as significant
 // End of transmission
 let endFreq = 4500;
 let frequencies = [5000, 5100, 5200, 5300, 5400, 5500, 5600, 5700, 
-                  5800, 5900, 6000, 6100, 6200, 6300, 6400, 6500];
+                  5800, 5900, 6000, 6100, 6200, 6300, 6400, 6500, 4000, 4500];
 
 let value =  { // Used for print formatting only
   5000: '0',
@@ -29,7 +29,8 @@ let value =  { // Used for print formatting only
   6300: 'D',
   6400: 'E',
   6500: 'F',
-  4000: 'R' // Repeat marker.
+  4000: 'R', // Repeat marker.
+  4500: 'EOT'
   };
 
 
@@ -91,32 +92,53 @@ function draw() {
     let //startEnergy = fft.getEnergy(startFreq),
         endEnergy = fft.getEnergy(endFreq);
 
-    
-    if(endEnergy > threshold){
-      // If the end marker was heard, stop listening and reconstruct the data.
-      finished = true;
+    // Get the tone of the sound being played.
+    let idx = getDominantFreq(fft);
+    // If it's the same value as before, we haven't changed yet, just wait.
+    if(value[frequencies[idx]] == bitstr[bitstr.length-1]) {
+      print("Ignoring same value.");
+      return;
     }
     else {
-      // Listen for tones that match the preset frequencies to represent hex digits (defined by the frequencies variable)
-      let idx = getDominantFreq(fft);
-      // Skip it if it's the same value.
-      if(idx == bitstr[bitstr.length-1]) {
-        return;
+      // We heard a different value. Record it.
+      // Was it the end value?
+      if(value[frequencies[idx]] == 'EOT') {
+        print("Heard End of Transmission.");
+        finished = true;
       }
-      
-      bitstr += value[frequencies[idx]];
-      lookForData = false;
+      else {
+        bitstr += value[frequencies[idx]];
+        print("Heard " + value[frequencies[idx]]);
+      }
     }
+
+    // if(endEnergy > threshold){
+    //   // If the end marker was heard, stop listening and reconstruct the data.
+    //   finished = true;
+    // }
+    // else {
+    //   // Listen for tones that match the preset frequencies to represent hex digits (defined by the frequencies variable)
+    //   let idx = getDominantFreq(fft);
+    //   // Skip it if it's the same value.
+    //   if(value[frequencies[idx]] == bitstr[bitstr.length-1]) {
+    //     return;
+    //   }
+    //   if(bitstr.length >= 1)
+    //   bitstr += value[frequencies[idx]];
+    //   print("Heard " + value[frequencies[idx]]);
+    //   lookForData = false;
+    // }
   }
 
   // Print out bitstr
   if (finished && !printed) {
+    bitstr = bitstr.substring(1);
     printed = true; // Ensures output is only printed once.
     // Convert all of the 'R' repeat markers to their repeated values.
-    for(let i=1; i < bitstr.length; i++) {
+    for(let i=1; i < bitstr.length; i++) { // Start at 2??
       if(bitstr[i] == 'R') {
         // Replace it with the previous value.
-        bitstr[i] = bitstr[i-1];
+        bitstr[i] = bitstr[i-1]; // It's not an array. TODO make it an array
       }
     }
 
@@ -132,7 +154,7 @@ function getDominantFreq(fft) {
   
   for(let i = 0; i < frequencies.length; i++){
     let energy = fft.getEnergy(frequencies[i]);
-    if(energy > maxEnergy) {
+    if(energy > threshold && energy > maxEnergy) {
       maxEnergy = energy;
       maxidx = i;
     }
