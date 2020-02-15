@@ -1,12 +1,12 @@
 let mic;
 let bitstr;
-let lookForData; // true after start sound is played
+// let lookForData; // true after start sound is played
 let printed; 
 let finished;
 let threshold = 150; // Energy level threshold to consider signal as significant
 
 // Tone delimiter
-let startFreq = 4000; 
+// let startFreq = 4000; 
 // End of transmission
 let endFreq = 4500;
 let frequencies = [5000, 5100, 5200, 5300, 5400, 5500, 5600, 5700, 
@@ -28,7 +28,8 @@ let value =  { // Used for print formatting only
   6200: 'C',
   6300: 'D',
   6400: 'E',
-  6500: 'F'
+  6500: 'F',
+  4000: 'R' // Repeat marker.
   };
 
 
@@ -87,41 +88,45 @@ function draw() {
     endShape();
 
     // Get a sample of the energies (magnitudes) at the beginning and end marker frequencies.
-    let startEnergy = fft.getEnergy(startFreq),
+    let //startEnergy = fft.getEnergy(startFreq),
         endEnergy = fft.getEnergy(endFreq);
 
-    if(startEnergy > threshold && !lookForData){
-      // If the start marker was heard, begin listening for data tones.
-      lookForData = true;
-    }
-    else if(endEnergy > threshold && !lookForData){
+    
+    if(endEnergy > threshold){
       // If the end marker was heard, stop listening and reconstruct the data.
       finished = true;
-      console.log("Recieved", bitstr);
-      return;
     }
-    else if(lookForData && startEnergy < threshold && endEnergy < threshold) {
+    else {
       // Listen for tones that match the preset frequencies to represent hex digits (defined by the frequencies variable)
-      let idx = getDominantFreq(fft, frequencies);
+      let idx = getDominantFreq(fft);
       bitstr += value[frequencies[idx]];
       lookForData = false;
     }
   }
 
   // Print out bitstr
-  if (finished) {
+  if (finished && !printed) {
+    printed = true; // Ensures output is only printed once.
+    // Convert all of the 'R' repeat markers to their repeated values.
+    for(let i=1; i < bitstr.length; i++) {
+      if(bitstr[i] == 'R') {
+        // Replace it with the previous value.
+        bitstr[i] = bitstr[i-1];
+      }
+    }
+    
     let message = decodeRx(bitstr);
     console.log("Reconstructed message:", message);
     document.getElementById("recieved_msg").innerHTML = message;
   }
 } // End of draw()
 
-function getDominantFreq(fft, freq) {
+function getDominantFreq(fft) {
   // Returns the frequency with the largest energy (amplitude)
   let maxEnergy = 0, maxidx = 0;
   
-  for(let i = 0; i < freq.length; i++){
-    let energy = fft.getEnergy(freq[i]);
+  for(let i = 0; i < frequencies.length; i++){
+    let energy = fft.getEnergy(frequencies[i]);
     if(energy > maxEnergy) {
       maxEnergy = energy;
       maxidx = i;
